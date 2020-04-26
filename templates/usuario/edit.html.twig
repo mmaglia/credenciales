@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar Usuario{% endblock %}
+
+{% block body %}
+    <h1>Edición de Usuario</h1>
+    <!-- Se agregan estilos a los botones para que queden alineados --> 
+    {{ include('usuario/_form.html.twig', {'button_label': 'Grabar Cambios'}) }}
+    <a class="btn btn-secondary float-left volver" href="{{ path('usuario_index') }}">Volver a la Lista</a>
+    {{ include('usuario/_delete_form.html.twig') }}
+{% endblock %}

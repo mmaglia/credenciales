@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Credenciales{% endblock %}
+
+{% block body %}
+
+    {% if mensaje == '' %}
+        {# Muestra lista de Archivos (sólo para ROLE_ADMIN) #}
+        <h1>Lista de Credenciales</h1>
+        <br>
+
+        {# Muestra mensajes de tipo flash #}
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="row">
+                    <div class="col-6"></div>
+                    <div class="col-6 text-right">
+                        <div class="alert alert-{{ label }}">{{ message }}</div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        {# Botón para subir nuevas credenciales #}
+        <a class="btn btn-primary float-right" href="{{ path('upload') }}">Subir Nuevas Credenciales</a>
+
+        {# Lista el repositorio de credenciales #}
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Credencial</th>
+                    <th>Descargar</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            {% for archivo in archivos %}
+                <tr>
+                    <td>{{ archivo }}</td>
+                    <td class="table-bordered table-secondary text-center d-print-none" width="140px" style="background-color: rgb(245, 245, 245);">
+                        <a target="_blank" href="pdf/{{ archivo}}" title="Descargar"><i class="far fa-arrow-alt-circle-down fa-lg"></i></a>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+{#                        <a target="_blank" href="pdf/{{ archivo}}" title="Borrar"><i class="far fa-trash-alt fa-lg"></i></a> #}
+                        <a href="{{ path('delete', {'credencial': archivo }) }}" title="Borrar"><i class="far fa-trash-alt fa-lg"></i></a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="13">no hay credenciales</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <a class="btn btn-primary float-left" href="{{ path('deleteAll') }}" id="deleteAll">Vaciar el Repositorio Completo</a>
+
+    {% else %}
+        {# Muestra credencial no encontrada o mensaje por coincidencia múltiple #}
+        <div class="example-wrapper">
+            <br>
+            <h1>{{ mensaje }} <strong>{{apellido | capitalize }} {{nombre |capitalize }}</strong> </h1>
+            <br>
+            <div class="text-center">
+                <p>{{ sugerencia }}.</p>
+            </div>
+            <br><br>
+            <div class="text-center">
+                <a class="btn btn-primary btn-lg float-center" href="{{ path('app_login') }}" role="button">Volver a Intentar</a>
+            </div>
+
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(function() {
+            $(document).ready(function(){            
+
+                // Pide confirmación y rutea hacia el método que borra todas las credenciales o al que la lista solamente
+                $("#deleteAll").click(function (event) {
+                    event.preventDefault();
+                    if (!confirm("¿Desea vaciar el repositorio de Credenciales?")) {
+                        $(this).attr("href", '/credencial');
+                        console.log("NO Proceder")
+                    }
+                    window.location = this.href;
+                })
+                                
+                $(".alert").delay(1200).slideUp(750);
+            });
+        });
+    </script>  
+    
+{% endblock %}     

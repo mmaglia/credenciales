@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Iniciar sesión{% endblock %}
+
+{% block body %}
+<div class="login">
+    <form method="post">
+        {% if error %}
+            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
+
+        <h1 class="h3 mb-5 font-weight-normal">Por favor, inicie sesión</h1>
+        <label for="inputUsername">Usuario</label>
+        <input type="text" value="{{ last_username }}" name="username" id="inputUsername" class="form-control" required autofocus>
+        <label for="inputPassword">Contraseña</label>
+        <input type="password" name="password" id="inputPassword" class="form-control" required>
+        <label for="inputUsername">Apellido</label>
+        <input type="text" name="apellido" id="inputApellido" class="form-control" required autofocus>
+        <label for="inputUsername">Primer Nombre</label>
+        <input type="text" name="nombre" id="inputNombre" class="form-control" required autofocus>
+
+        <br>
+        <input type="hidden" name="_csrf_token"
+            value="{{ csrf_token('authenticate') }}"
+        >
+
+        {#
+            Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
+            See https://symfony.com/doc/current/security/remember_me.html
+
+            <div class="checkbox mb-3">
+                <label>
+                    <input type="checkbox" name="_remember_me"> Remember me
+                </label>
+            </div>
+        #}
+
+        <button class="btn btn-lg btn-primary float-right" type="submit">
+            Iniciar
+        </button>
+    </form>
+</div>
+
+
+{% endblock %}

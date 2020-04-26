@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Usuario{% endblock %}
+
+{% block body %}
+    <h1>Usuario</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ usuario.id }}</td>
+            </tr>
+            <tr>
+                <th>Username</th>
+                <td>{{ usuario.username }}</td>
+            </tr>
+            <tr>
+                <th>Roles</th>
+                <td>{{ usuario.roles ? usuario.roles|json_encode : '' }}</td>
+            </tr>
+            <tr>
+                <th>Password</th>
+                <td>{{ usuario.password }}</td>
+            </tr>
+            <tr>
+                <th>Dni</th>
+                <td>{{ usuario.dni }}</td>
+            </tr>
+            <tr>
+                <th>Apellido</th>
+                <td>{{ usuario.apellido }}</td>
+            </tr>
+            <tr>
+                <th>Nombre</th>
+                <td>{{ usuario.nombre }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ usuario.email }}</td>
+            </tr>
+            <tr>
+                <th>Fecha_alta</th>
+                <td>{{ usuario.fechaAlta ? usuario.fechaAlta|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Fecha_baja</th>
+                <td>{{ usuario.fechaBaja ? usuario.fechaBaja|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Ultimo_acceso</th>
+                <td>{{ usuario.ultimoAcceso ? usuario.ultimoAcceso|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Cantidad_accesos</th>
+                <td>{{ usuario.cantidadAccesos }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a class="btn btn-secondary float-left volver" href="{{ path('usuario_index') }}">Vover a la lista</a>
+    <a class="btn btn-secondary float-left volver" href="{{ path('usuario_edit', {'id': usuario.id}) }}">Editar</a>
+    {{ include('usuario/_delete_form.html.twig') }}
+{% endblock %}

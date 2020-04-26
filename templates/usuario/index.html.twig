@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestión de Usuario{% endblock %}
+
+{% block body %}
+    <h1>Lista de Usuarios</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Username</th>
+                <th>Roles</th>
+                <th>Dni</th>
+                <th>Apellido</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Alta</th>
+                <th>Baja</th>
+                <th>Ult. Acceso</th>
+                <th>Cant. Accesos</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        {% for usuario in usuarios %}
+            <tr>
+                <td>{{ usuario.id }}</td>
+                <td>{{ usuario.username }}</td>
+                <td>{{ usuario.roles ? usuario.roles|json_encode|replace({'ROLE_': '', '[': '', ']': '', '"':'', ',': ', ' }) : '' }}</td>
+                <td>{{ usuario.dni }}</td>
+                <td>{{ usuario.apellido }}</td>
+                <td>{{ usuario.nombre }}</td>
+                <td>{{ usuario.email }}</td>
+                <td>{{ usuario.fechaAlta ? usuario.fechaAlta|date('d/m/Y') : '' }}</td>
+                <td>{{ usuario.fechaBaja ? usuario.fechaBaja|date('d/m/Y') : '' }}</td>
+                <td>{{ usuario.ultimoAcceso ? usuario.ultimoAcceso|date('d/m/Y') : '' }}</td>
+                <td>{{ usuario.cantidadAccesos }}</td>
+                <td class="table-bordered table-secondary text-center d-print-none" width="80px" style="background-color: rgb(245, 245, 245);">
+                    <a href="{{ path('usuario_show', {'id': usuario.id}) }}" title="Ver"><i class="fas fa-eye"></i></a>
+                    &nbsp;&nbsp;
+                    <a href="{{ path('usuario_edit', {'id': usuario.id}) }}" title="Editar"><i class="fas fa-pen"></i></a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="13">no hay registros</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a class="btn btn-primary float-right" href="{{ path('usuario_new') }}">Crear Nuevo Usuario</a>
+{% endblock %}

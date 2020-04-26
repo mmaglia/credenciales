@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nuevo Usuario{% endblock %}
+
+{% block body %}
+    <h1>Crear nuevo Usuario</h1>
+    <!-- Se agregan estilos a los botones para que queden alineados -->
+    {{ include('usuario/_form.html.twig') }}
+    <a class="btn btn-secondary float-left volver" href="{{ path('usuario_index') }}">Vover a la lista</a>
+{% endblock %}

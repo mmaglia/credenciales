@@ -1,0 +1,68 @@
+// customize some Bootstrap variables
+$blue: darken(#006600, 5%);
+
+// the ~ allows you to reference things in node_modules
+@import '~bootstrap/scss/bootstrap';
+@import '~@fortawesome/fontawesome-free/css/all.css';
+
+//@import '~@fortawesome/fontawesome-free/scss/fontawesome';
+//@import '~@fortawesome/fontawesome-free/scss/regular';
+//@import '~@fortawesome/fontawesome-free/scss/solid';
+
+//@import '~@fortawesome/fontawesome-free/scss/brands';
+
+
+body {
+    font-family: Helvetica Neue,sans-serif;
+}
+
+h1 {
+    margin-top: .5rem;
+    font-size: 1.8rem;
+    text-align: center;
+}
+
+h2 {
+    font-size: 1.2rem;
+    color: #006600;
+    font-weight: lighter;
+    text-align: center;
+    border-bottom: 1.5px solid #006600;
+}
+
+h6 {
+    font-size: .75rem;
+    color: #006600;
+    font-weight: bold;
+}
+
+label {
+    font-weight: normal;
+    color: #006600;
+    font-size: .9rem;
+    margin-bottom: 0;
+    margin-left: .2rem;
+}
+
+// Centrado de formulario de login
+.login {
+    width: 300px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.login button {
+    margin-top:5px;
+}
+
+// Botones en general
+.volver {
+    margin-right: 5px;
+}
+
+// Footer 
+.footer {
+    padding-top: 40px;
+    font-size: .75rem;
+    color: #006600;
+}

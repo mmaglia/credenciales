@@ -2,11 +2,24 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
+        <title>{% block title %}Credenciales{% endblock %}</title>
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('css/app') }}
+        {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
+        <div class="container">
+            {% block body %}{% endblock %}            
+        </div>
+
+        {% block javascripts %}
+            {{ encore_entry_script_tags('js/app') }}
+        {% endblock %}
     </body>
+    
+    <footer class="footer text-center">
+        <br><br>
+        <p>&copy; 2020 <a target="_blank" href="http://www.justiciasantafe.gov.ar/js/index.php"> Poder Judicial de la Provincia de Santa Fe</a> - República Argentina. Todos los derechos reservados</p>
+        </div>
+    </footer>
 </html>
