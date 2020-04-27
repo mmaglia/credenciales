@@ -14,16 +14,17 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\String\Slugger\SluggerInterface;
-
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Psr\Log\LoggerInterface;
+
 
 class CredencialController extends AbstractController
 {
     /**
      * @Route("/credencial", name="credencial_index", methods={"GET"})
      */
-    public function index(SessionInterface $session)
+    public function index(LoggerInterface $logger, SessionInterface $session)
     {
 
         $finder = new Finder();
@@ -68,15 +69,18 @@ class CredencialController extends AbstractController
             switch (count($encontrado)) {
                 case 0:
                     // Si no encontró ningún archivo coincidente muestra mensaje
+                    $logger->info('Credencial no encontrada', ['apellido' => $apellido, 'nombre' => $nombre]);                    
                     $mensaje = 'No se ha encontrado credencial para';
                     $sugerencia = 'Verifique por favor que haber ingresado correctamente el Apellido y Nombre';
                     break;
                 case 1:
                     // Si encontró un archivo coincidente los muestra
+                    $logger->info('Se muestra credencial', ['Archivo' => 'pdf/' . $encontrado[0]]);                    
                     return new Response(file_get_contents('pdf/' . $encontrado[0]), 200, array('Content-Type' => 'application/pdf'));
                     break;
                 default:
                     // Si encontró más de un archivo que coincida, muestra mensaje pertinente
+                    $logger->info('Coincidencia Múltiple', ['apellido' => $apellido, 'nombre' => $nombre]);                    
                     $mensaje = 'Se ha encontrado más de una credencial que coincide para';
                     $sugerencia = 'En lugar de su primer nombre pruebe con su segundo nombre';
             }
@@ -97,7 +101,7 @@ class CredencialController extends AbstractController
      * @Route("/upload", name="upload", methods={"GET", "POST"})
      * @IsGranted("ROLE_ADMIN")
      */
-    public function upload(Request $request, SluggerInterface $slugger)
+    public function upload(Request $request, SluggerInterface $slugger, LoggerInterface $logger)
     {
         $form = $this->createForm(CredencialUploadType::class);
         $form->handleRequest($request);
@@ -117,18 +121,23 @@ class CredencialController extends AbstractController
                     // Y lo mueve al repositorio (definido en config/services.yaml)
                     try {
                         $cantidad++;
-                        $credencialFile->move(
-                            $this->getParameter('credenciales_directory'), $newFilename);
+                        $credencialFile->move($this->getParameter('credenciales_directory'), $newFilename);
+                        $logger->info('Credencial subida al repositorio', ['Archivo' => 'pdf/' . $newFilename]); 
                     } catch (FileException $e) {
                         echo "Ocurrió un error al intentar subir el archivo $newFilename ";
                     }
                 }
 
                 // Procesa mensaje de tipo Flash
-                if ($cantidad ==  1)
-                    $this->addFlash('info', 'Se ha añadido 1 crendencial al Repositorio');
-                elseif ($cantidad > 1)
-                    $this->addFlash('info', $cantidad . ' credenciales agregadas al repositorio');
+                if ($cantidad ==  1) {
+                    $info = 'Se ha añadido 1 crendencial al Repositorio';
+                    $this->addFlash('info', $info);
+                    $logger->info($info);                    
+                } elseif ($cantidad > 1) {
+                    $info = $cantidad . ' credenciales agregadas al repositorio';
+                    $this->addFlash('info', $info);
+                    $logger->info($info);                    
+                }
 
             }
 
@@ -144,7 +153,7 @@ class CredencialController extends AbstractController
      * @Route("/delete/{credencial}", name="delete", methods={"GET", "POST"})
      * @IsGranted("ROLE_ADMIN")
      */
-    public function delete(Request $request)
+    public function delete(Request $request, LoggerInterface $logger)
     {
         // Obtiene el nombre del archivo a borrar
         $ruta = explode('/', $request->getPathInfo());
@@ -159,6 +168,7 @@ class CredencialController extends AbstractController
             // Borro credencial y armo mensaje Flash
             $filesystem->remove('pdf/' . $archivo);
             $this->addFlash('info', $archivo . ' ha sido borrado');
+            $logger->info('Se borró una credencial', ['archivo' => 'pdf/' . $archivo ]);   
         } catch (IOExceptionInterface $exception) {
             echo "Ocurrió un error al intentar borrar el archivo $archivo " . $exception->getPath();
         }
@@ -170,7 +180,7 @@ class CredencialController extends AbstractController
      * @Route("/deleteAll", name="deleteAll", methods={"GET", "POST"})
      * @IsGranted("ROLE_ADMIN")
      */
-    public function deleteAll(Request $request)
+    public function deleteAll(Request $request, LoggerInterface $logger)
     {
         $filesystem = new Filesystem();
 
@@ -182,9 +192,12 @@ class CredencialController extends AbstractController
             // Itero y borro uno a uno cada uno de los archivos
             foreach ($finder as $file) {
                 $filesystem->remove($file);
+                $logger->info('Se borró una credencial', ['archivo' => $file ]); 
             }        
 
             $this->addFlash('info', 'Se ha vaciado el repositorio de credenciales');
+            $logger->info('Se ha vaciado el repositorio de credenciales'); 
+            
         } catch (IOExceptionInterface $exception) {
             echo "Ocurrió un error al intentar vaciar el directorio " . $exception->getPath();
         }
