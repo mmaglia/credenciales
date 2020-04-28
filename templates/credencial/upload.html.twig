@@ -6,10 +6,27 @@
 
     <h1>Agregar nuevas credenciales</h1>
 
-    {{ form_start(form) }}
-        {{ form_row(form.credencial) }}
-        {# <button class="btn btn-primary float-right">{{ button_label|default('Subir Archivos') }}</button> #}
-    {{ form_end(form) }}
+    <br>
+    <div class="card border-primary mb-3">
+        <div class="card-body text-primary">
+            <h5 class="card-title">Atención</h5>
+            <div class="form-group row">
+                <div class="col-sm-7 text-justify">
+                    <p>Los nombre de los archivos que suba deben respetar el siguiente formato:</p>
+                    <p>[dni NombrePersona.pdf]. Ej. <strong>13401937 Sanchez Ricardo.pdf</strong>.</p>
+                    <p>Puede seleccionar múltiples archivos PDF. Para ello puede valerse de las teclas <strong><i>CTRL</i></strong> o <strong><i>SHIFT</i></strong> para proceder con una selección múltiple.</p>
+                </div>
+                <div class="col-sm-5">
+                    {{ form_start(form) }}
+                        {{ form_row(form.credencial) }}
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>    
+
+    <a class="btn btn-secondary float-left volver" href="{{ path('credencial_index') }}">Volver a la Lista</a>
+    <br><br><br>
 
 {% endblock %}
 

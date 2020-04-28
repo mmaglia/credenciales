@@ -6,6 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\All;
 
 class CredencialUploadType extends AbstractType
 {
@@ -13,23 +14,22 @@ class CredencialUploadType extends AbstractType
     {
         $builder
             ->add('credencial', FileType::class, [
-                'label' => 'Credenciales (PDF file)',
+                'label' => 'Seleccione los Archivos de Credenciales a subir',
                 'data_class'=>null,
                 'multiple' => true,
                 'mapped' => false,
                 'required' => false,
-                // unmapped fields can't define their validation using annotations
-                // in the associated entity, so you can use the PHP constraint classes
-                // 'constraints' => [
-                //     new File([
-                //         'maxSize' => '1024k',
-                //         'mimeTypes' => [
-                //             'application/pdf',
-                //             'application/x-pdf',
-                //         ],
-                //         'mimeTypesMessage' => 'Por favor suba un archivo en formato PDF',
-                //     ])
-                // ],
+                'attr' => ['class' => 'form-control-file'],
+                'constraints' => new All([
+                    new File([
+                        'maxSize' => '1024k',
+                        'mimeTypes' => [
+                            'application/pdf',
+                            'application/x-pdf',
+                        ],
+                        'mimeTypesMessage' => 'Por favor suba un archivo en formato PDF',
+                    ])
+                ])
             ])
         ;
     }

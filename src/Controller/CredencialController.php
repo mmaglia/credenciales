@@ -29,8 +29,7 @@ class CredencialController extends AbstractController
 
         $finder = new Finder();
 
-        // Busco todos los archivos de tipo 'pdf' en el directorio /public/pdf'
-        // (definida la ruta en config/services.yaml)
+        // Busco todos los archivos de tipo 'pdf' en el directorio /public/pdf' (definida la ruta en config/services.yaml)
         $finder->files()->in('pdf')->sortByName();
 
         if ($this->isGranted('ROLE_ADMIN')) {
@@ -38,29 +37,69 @@ class CredencialController extends AbstractController
             $archivos = [];
             foreach ($finder as $file) {
                 $archivos[] = $file->getRelativePathname();
-            }        
+            }
+
+            $fileList = [];
+            $i = 0;
+            $vistos = 0;
+            $noVistos = 0;
+            foreach($archivos as $archivo) {
+                // Nombre del Archivo en el FileSystem
+                $fileList[$i]['archivo'] = $archivo;
+
+                // Obtengo el DNI (la cadena inicial hasta el primer blanco del nombre del archivo)
+                $dividoBlanco = explode(' ', $archivo);
+                $fileList[$i]['dni'] = $dividoBlanco[0];
+
+                // Obtengo el Nombre de la Persona (lo que sigue al blanco, luego del DNI, y hasta el punto de la extensión del archivo)
+                $dividoPunto = explode('.', substr($archivo, strlen($dividoBlanco[0])));
+                $fileList[$i]['nombre'] = trim($dividoPunto[0]);
+                
+                // Consulto si el último elemento, luego de dividirlo la cadena por punto (.) contiene la cadena 'visto'
+                $fileList[$i]['visto'] = (end($dividoPunto) == 'visto');
+
+                if (end($dividoPunto) == 'visto')
+                    $vistos++;
+                else
+                    $noVistos++;
+
+                $i++;
+            }
+
+            if (count($fileList)) {
+                // Obtengo una lista de columnas de cada uno de los elementos del fileList
+                foreach ($fileList as $clave => $fila) {
+                    $nombre[$clave] = $fila['nombre'];
+                    $dni[$clave] = $fila['dni'];
+                    $visto[$clave] = $fila['visto'];
+                }
+                
+                // Ordena el fileList
+                array_multisort($visto, SORT_ASC, $nombre, SORT_ASC, $dni, SORT_ASC, $fileList);
+            }
 
             return $this->render('credencial/index.html.twig', [
-                'apellido' => '',
-                'nombre' => '',
+                'dni' => '',
                 'mensaje' => '',
                 'sugerencia' => '',
-                'archivos' => $archivos,
+                'archivos' => $fileList,
+                'total' => $i,
+                'vistos' => $vistos,
+                'noVistos' => $noVistos,
                 'controller_name' => 'CredencialController',
             ]);
         }
         else {
-            // Sino, busca una credencial en base al apellido y nombre ingresados y la muestra
-            $apellido = $session->get('apellido');
-            $nombre = $session->get('nombre');
+            // Sino, busca una credencial en base al DNI ingresado y la muestra
+            $dni = $session->get('dni');
             
             $encontrado = [];
             foreach ($finder as $file) {
                 $fileNameWithExtension = $file->getRelativePathname(); // Obtengo el nombre del Archivo
             
-                if (!(strripos($fileNameWithExtension, $apellido) === false || strripos($fileNameWithExtension, $nombre) === false))
+                if (!(strripos($fileNameWithExtension, $dni) === false))
                 {                    
-                    // Veo si el string del apellido y del nombre están contenidos en el nombre del archivo
+                    // Veo si el string del DNI están contenidos en el nombre del archivo
                     // Si así, lo agrego en $encontrado
                     $encontrado[] = $fileNameWithExtension;
                 }
@@ -69,26 +108,39 @@ class CredencialController extends AbstractController
             switch (count($encontrado)) {
                 case 0:
                     // Si no encontró ningún archivo coincidente muestra mensaje
-                    $logger->info('Credencial no encontrada', ['apellido' => $apellido, 'nombre' => $nombre]);                    
-                    $mensaje = 'No se ha encontrado credencial para';
-                    $sugerencia = 'Verifique por favor que haber ingresado correctamente el Apellido y Nombre';
+                    $logger->info('Credencial no encontrada', ['dni' => $dni]);                    
+                    $mensaje = 'No se ha encontrado credencial para el DNI ';
+                    $sugerencia = 'Verifique por favor de haber ingresado correctamente el número';
                     break;
                 case 1:
-                    // Si encontró un archivo coincidente los muestra
+                    // Encontró un archivo coincidente
+                    // Lo renombra con sufico .visto si es la primera vez que se accede
+                    $nombreArchivo = $encontrado[0];
+                    if (substr($encontrado[0], -6) != '.visto') {
+                        $filesystem = new Filesystem();
+                        try {
+                            $nombreArchivo = $encontrado[0] . '.visto';
+                            $filesystem->rename('pdf/' . $encontrado[0], 'pdf/' . $nombreArchivo );
+                        } catch (IOExceptionInterface $exception) {
+                            echo "Ocurrió un error al intentar renombrar el archivo $archivo ";
+                        }
+                    }
+            
+                    // Lo muestra
                     $logger->info('Se muestra credencial', ['Archivo' => 'pdf/' . $encontrado[0]]);                    
-                    return new Response(file_get_contents('pdf/' . $encontrado[0]), 200, array('Content-Type' => 'application/pdf'));
+
+                    return new Response(file_get_contents('pdf/' . $nombreArchivo), 200, array('Content-Type' => 'application/pdf'));
                     break;
                 default:
                     // Si encontró más de un archivo que coincida, muestra mensaje pertinente
-                    $logger->info('Coincidencia Múltiple', ['apellido' => $apellido, 'nombre' => $nombre]);                    
-                    $mensaje = 'Se ha encontrado más de una credencial que coincide para';
-                    $sugerencia = 'En lugar de su primer nombre pruebe con su segundo nombre';
+                    $logger->info('Coincidencia Múltiple', ['dni' => $dni]);                    
+                    $mensaje = 'Se ha encontrado más de una credencial que coincide con el DNI ';
+                    $sugerencia = 'No es posible proceer con su descarga.';
             }
 
 
             return $this->render('credencial/index.html.twig', [
-                'apellido' => $apellido,
-                'nombre' => $nombre,
+                'dni' => $dni,
                 'mensaje' => $mensaje,
                 'sugerencia' => $sugerencia,
                 'controller_name' => 'CredencialController',
@@ -122,7 +174,7 @@ class CredencialController extends AbstractController
                     try {
                         $cantidad++;
                         $credencialFile->move($this->getParameter('credenciales_directory'), $newFilename);
-                        $logger->info('Credencial subida al repositorio', ['Archivo' => 'pdf/' . $newFilename]); 
+                        $logger->info('Credencial subida al repositorio', ['Archivo' => 'pdf/' . $newFilename, 'Usuario' => $this->getUser()->getUsuario()]); 
                     } catch (FileException $e) {
                         echo "Ocurrió un error al intentar subir el archivo $newFilename ";
                     }
@@ -168,7 +220,7 @@ class CredencialController extends AbstractController
             // Borro credencial y armo mensaje Flash
             $filesystem->remove('pdf/' . $archivo);
             $this->addFlash('info', $archivo . ' ha sido borrado');
-            $logger->info('Se borró una credencial', ['archivo' => 'pdf/' . $archivo ]);   
+            $logger->info('Se borró una credencial', ['archivo' => 'pdf/' . $archivo, 'Usuario' => $this->getUser()->getUsuario() ]);   
         } catch (IOExceptionInterface $exception) {
             echo "Ocurrió un error al intentar borrar el archivo $archivo " . $exception->getPath();
         }

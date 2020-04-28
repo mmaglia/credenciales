@@ -47,8 +47,7 @@ class AppCustomAuthenticator extends AbstractFormLoginAuthenticator
         $credentials = [
             'username' => $request->request->get('username'),
             'password' => $request->request->get('password'),
-            'apellido' => $request->request->get('apellido'),
-            'nombre' => $request->request->get('nombre'),
+            'dni' => $request->request->get('dni'),
             'csrf_token' => $request->request->get('_csrf_token'),
         ];
         $request->getSession()->set(
@@ -88,10 +87,9 @@ class AppCustomAuthenticator extends AbstractFormLoginAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
-        // Almaceno en sesión el apellido y nombre ingresado
+        // Almaceno en sesión el DNI ingresado
         
-        $request->getSession()->set('apellido', $request->request->get('apellido'));
-        $request->getSession()->set('nombre', $request->request->get('nombre'));
+        $request->getSession()->set('dni', $request->request->get('dni'));
 
         // Una vez logueado correctamente, guardo dentro del usuario logueado la fecha de último acceso y sumarizo el contador de entradas
         $user = $this->entityManager->getRepository(Usuario::class)->findOneBy(['username' => $request->request->get('username')]);

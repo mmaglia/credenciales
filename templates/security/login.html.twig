@@ -14,10 +14,8 @@
         <input type="text" value="{{ last_username }}" name="username" id="inputUsername" class="form-control" required autofocus>
         <label for="inputPassword">Contraseña</label>
         <input type="password" name="password" id="inputPassword" class="form-control" required>
-        <label for="inputUsername">Apellido</label>
-        <input type="text" name="apellido" id="inputApellido" class="form-control" required autofocus>
-        <label for="inputUsername">Primer Nombre</label>
-        <input type="text" name="nombre" id="inputNombre" class="form-control" required autofocus>
+        <label for="inputUsername">DNI</label>
+        <input type="number" name="dni" id="inputDni" class="form-control" min="5000000" max="99999999" required>
 
         <br>
         <input type="hidden" name="_csrf_token"

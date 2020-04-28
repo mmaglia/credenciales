@@ -6,29 +6,54 @@
 
     {% if mensaje == '' %}
         {# Muestra lista de Archivos (sólo para ROLE_ADMIN) #}
-        <h1>Lista de Credenciales</h1>
+        <div style="text-align:center;">
+            <h1>Lista de Credenciales</h1>
+            <div class="float-right">
+                <a href="{{ path('usuario_index') }}" title="Salir" class="d-print-none" style="display:inline;">
+                    <i class="fas fa-users-cog fa-lg"></i>&nbsp;Gestionar Usuarios
+                </a>
+                &nbsp;&nbsp;
+                <a href="{{ path('app_logout') }}" title="Salir" class="d-print-none" style="display:inline;">
+                    <i class="fas fa-sign-out-alt fa-lg"></i>&nbsp;Salir
+                </a>
+            </div>
+        </div>
+    
         <br>
+        <div class="card border-primary mb-3 align-bottom float-left" style="max-width: 48rem; font-size: .8rem; background-color: rgb(245, 245, 245);">
+            <div class="card-body border-primary text-dark float-right" style="max-width: 48rem; padding: 0.3rem; background-color: rgb(245, 245, 245);">
+                <div class="card-body text-dark text-right" style="font-size: 1rem;">
+                    Total de Credenciales: <strong>{{ total }}</strong>
+                    <br>
+                    Vistas: <strong>{{ vistos }}</strong>
+                    <br>
+                    No Vistas: <strong>{{ noVistos }}</strong>
+                </div>
+            </div>
+        </div>
+
+        {# Botón para subir nuevas credenciales #}
+        <a class="btn btn-primary mt-5 float-right" href="{{ path('upload') }}">Subir Nuevas Credenciales</a>
 
         {# Muestra mensajes de tipo flash #}
         {% for label, messages in app.flashes %}
             {% for message in messages %}
-                <div class="row">
-                    <div class="col-6"></div>
-                    <div class="col-6 text-right">
+                <div class="row mt-3">
+                    <div class="col-12"></div>
+                    <div class="col-12 text-center">
                         <div class="alert alert-{{ label }}">{{ message }}</div>
                     </div>
                 </div>
             {% endfor %}
         {% endfor %}
 
-        {# Botón para subir nuevas credenciales #}
-        <a class="btn btn-primary float-right" href="{{ path('upload') }}">Subir Nuevas Credenciales</a>
-
         {# Lista el repositorio de credenciales #}
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th>Credencial</th>
+                    <th>DNI</th>
+                    <th>Apellido y Nombre</th>
+                    <th>Visto</th>
                     <th>Descargar</th>
                 </tr>
             </thead>
@@ -36,12 +61,14 @@
                 
             {% for archivo in archivos %}
                 <tr>
-                    <td>{{ archivo }}</td>
+                    <td>{{ archivo.dni }}</td>
+                    <td>{{ archivo.nombre }}</td>
+                    <td>{{ archivo.visto ? '<i class="fas fa-check"></i>' : '' }}</td>
                     <td class="table-bordered table-secondary text-center d-print-none" width="140px" style="background-color: rgb(245, 245, 245);">
-                        <a target="_blank" href="pdf/{{ archivo}}" title="Descargar"><i class="far fa-arrow-alt-circle-down fa-lg"></i></a>
+                        <a target="_blank" href="pdf/{{ archivo.archivo }}" title="Descargar"><i class="far fa-arrow-alt-circle-down fa-lg"></i></a>
                         &nbsp;&nbsp;&nbsp;&nbsp;
 {#                        <a target="_blank" href="pdf/{{ archivo}}" title="Borrar"><i class="far fa-trash-alt fa-lg"></i></a> #}
-                        <a href="{{ path('delete', {'credencial': archivo }) }}" title="Borrar"><i class="far fa-trash-alt fa-lg"></i></a>
+                        <a href="{{ path('delete', {'credencial': archivo.archivo }) }}" title="Borrar"><i class="far fa-trash-alt fa-lg"></i></a>
                     </td>
                 </tr>
             {% else %}
@@ -58,7 +85,7 @@
         {# Muestra credencial no encontrada o mensaje por coincidencia múltiple #}
         <div class="example-wrapper">
             <br>
-            <h1>{{ mensaje }} <strong>{{apellido | capitalize }} {{nombre |capitalize }}</strong> </h1>
+            <h1>{{ mensaje }} <strong>{{dni | capitalize }}</strong> </h1>
             <br>
             <div class="text-center">
                 <p>{{ sugerencia }}.</p>
@@ -88,7 +115,7 @@
                     window.location = this.href;
                 })
                                 
-                $(".alert").delay(1200).slideUp(750);
+                $(".alert").delay(1000).slideUp(500);
             });
         });
     </script>  

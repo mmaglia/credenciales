@@ -3,7 +3,24 @@
 {% block title %}Gestión de Usuario{% endblock %}
 
 {% block body %}
-    <h1>Lista de Usuarios</h1>
+    <div style="text-align:center;">
+        <h1>Lista de Usuarios</h1>
+        <div class="float-right">
+            {% if is_granted('ROLE_SUPER_ADMIN') %}
+                <a href="{{ path('credencial_index') }}" title="Salir" class="d-print-none" style="display:inline;">
+                    <i class="far fa-id-card fa-lg"></i>&nbsp;Gestionar Credenciales
+                </a>
+                &nbsp;&nbsp;
+            {% endif %}
+            <a href="{{ path('app_logout') }}" title="Salir" class="d-print-none" style="display:inline;">
+                <i class="fas fa-sign-out-alt fa-lg"></i>&nbsp;Salir
+            </a>
+        </div>
+    </div>
+
+    <br>
+
+    <a class="btn btn-primary float-right mt-3" href="{{ path('usuario_new') }}">Crear Nuevo Usuario</a>
 
     <table class="table">
         <thead>
@@ -51,5 +68,4 @@
         </tbody>
     </table>
 
-    <a class="btn btn-primary float-right" href="{{ path('usuario_new') }}">Crear Nuevo Usuario</a>
 {% endblock %}
