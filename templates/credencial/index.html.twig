@@ -9,10 +9,12 @@
         <div style="text-align:center;">
             <h1>Lista de Credenciales</h1>
             <div class="float-right">
-                <a href="{{ path('usuario_index') }}" title="Salir" class="d-print-none" style="display:inline;">
-                    <i class="fas fa-users-cog fa-lg"></i>&nbsp;Gestionar Usuarios
-                </a>
-                &nbsp;&nbsp;
+                {% if is_granted('ROLE_SUPER_ADMIN') %}
+                    <a href="{{ path('usuario_index') }}" title="Salir" class="d-print-none" style="display:inline;">
+                        <i class="fas fa-users-cog fa-lg"></i>&nbsp;Gestionar Usuarios
+                    </a>
+                    &nbsp;&nbsp;
+                {% endif %}
                 <a href="{{ path('app_logout') }}" title="Salir" class="d-print-none" style="display:inline;">
                     <i class="fas fa-sign-out-alt fa-lg"></i>&nbsp;Salir
                 </a>
