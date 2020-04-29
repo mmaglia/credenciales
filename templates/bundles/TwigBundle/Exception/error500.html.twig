@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <br><br>
+
+    {% if   is_granted('IS_AUTHENTICATED_FULLY') %}
+      <div class="card border-danger mb-3">
+        <div class="card-header text-danger"><strong>Ups! Ocurrió un error</strong></div>
+        <div class="card-body text-danger">
+          <h5 class="card-title">Algo no funciono como se esperaba</h5>
+          <p class="card-text">Háganos saber qué estaba haciendo cuando se produjo este error. Lo arreglaremos lo más pronto posible.</p>
+          <p  class="card-text">Pedimos disculpas por cualquier inconveniente causado.</p>
+        </div>
+        <div class="card-footer text-right text-secondary">(Error 500)</div>
+      </div>
+    {% else %}
+      <div class="card border-danger mb-3">
+        <div class="card-body text-danger">
+          <h5 class="card-title">No fue posible finalizar la operación</h5>
+          <p class="card-text">Por favor vuelva a intentarlo en un rato. Pedimos disculpas por cualquier inconveniente causado.</p>
+        </div>
+        <div class="card-footer text-right text-secondary">(Error 500)</div>
+      </div>
+    {% endif %}
+{% endblock %}

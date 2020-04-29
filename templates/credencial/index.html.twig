@@ -67,7 +67,7 @@
                     <td>{{ archivo.nombre }}</td>
                     <td>{{ archivo.visto ? '<i class="fas fa-check"></i>' : '' }}</td>
                     <td class="table-bordered table-secondary text-center d-print-none" width="140px" style="background-color: rgb(245, 245, 245);">
-                        <a target="_blank" href="pdf/{{ archivo.archivo }}" title="Descargar"><i class="far fa-arrow-alt-circle-down fa-lg"></i></a>
+                        <a target="_blank" href="pdf/{{ archivo.archivoURL }}" title="Descargar"><i class="far fa-arrow-alt-circle-down fa-lg"></i></a>
                         &nbsp;&nbsp;&nbsp;&nbsp;
 {#                        <a target="_blank" href="pdf/{{ archivo}}" title="Borrar"><i class="far fa-trash-alt fa-lg"></i></a> #}
                         <a href="{{ path('delete', {'credencial': archivo.archivo }) }}" title="Borrar"><i class="far fa-trash-alt fa-lg"></i></a>

@@ -14,8 +14,8 @@
         <input type="text" value="{{ last_username }}" name="username" id="inputUsername" class="form-control" required autofocus>
         <label for="inputPassword">Contraseña</label>
         <input type="password" name="password" id="inputPassword" class="form-control" required>
-        <label for="inputUsername">DNI</label>
-        <input type="number" name="dni" id="inputDni" class="form-control" min="5000000" max="99999999" required>
+        <label for="inputUsername">DNI (sin puntos)</label>
+        <input type="number" name="dni" id="inputDni" placeholder="Ingrese sin puntos ni espacios" class="form-control" min="5000000" max="99999999" required>
 
         <br>
         <input type="hidden" name="_csrf_token"

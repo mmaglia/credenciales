@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>La página no existe</h1>
+    <br>
+    <div class="alert alert-danger text-center" role="alert">
+        La página solicitada no pudo ser localizada. Verifique la URL ingresada o dirígase a la <a href="{{ path('main') }}" class="alert-link">Página Principal</a>.
+      </div>
+{% endblock %}

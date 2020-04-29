@@ -46,6 +46,7 @@ class CredencialController extends AbstractController
             foreach($archivos as $archivo) {
                 // Nombre del Archivo en el FileSystem
                 $fileList[$i]['archivo'] = $archivo;
+                $fileList[$i]['archivoURL'] = str_replace(' ', '%20', $archivo);
 
                 // Obtengo el DNI (la cadena inicial hasta el primer blanco del nombre del archivo)
                 $dividoBlanco = explode(' ', $archivo);
