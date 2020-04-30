@@ -23,6 +23,17 @@ class UsuarioRepository extends ServiceEntityRepository implements PasswordUpgra
     }
 
     /**
+     * Retorna todos los registros ordenados por $column
+     */
+    public function findAllOrderedByColum($column, $sort = 'ASC')
+    {
+        return $this->createQueryBuilder('t')
+            ->addOrderBy('t.' . $column, $sort)
+            ->getQuery()
+            ->getResult();
+    } 
+
+    /**
      * Used to upgrade (rehash) the user's password automatically over time.
      */
     public function upgradePassword(UserInterface $user, string $newEncodedPassword): void
