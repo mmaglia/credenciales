@@ -22,9 +22,9 @@ use Psr\Log\LoggerInterface;
 class CredencialController extends AbstractController
 {
     /**
-     * @Route("/credencial", name="credencial_index", methods={"GET"})
+     * @Route("/credencial", name="credencial_index", methods={"GET", "POST"})
      */
-    public function index(LoggerInterface $logger, SessionInterface $session)
+    public function index(Request $request, LoggerInterface $logger, SessionInterface $session)
     {
 
         $finder = new Finder();
@@ -32,11 +32,32 @@ class CredencialController extends AbstractController
         // Busco todos los archivos de tipo 'pdf' en el directorio /public/pdf' (definida la ruta en config/services.yaml)
         $finder->files()->in('pdf')->sortByName();
 
+        // Para ROLE_ADMIN muestra listado de credenciales (archivos PDF) con sus acciones posibles
         if ($this->isGranted('ROLE_ADMIN')) {
-            // Para ROLE_ADMIN muestra listado de credenciales (archivos PDF) con sus acciones posibles
+            // Procesa filtro y lo mantiene en sesión del usuario
+            if (is_null($session->get('filtroFilenameCredencial'))) { // Verifica si es la primera vez que ingresa el usuario
+                // Establece el primero por defecto
+                $filtroFilename = '';
+            } else {
+                if (is_null($request->request->get('filename'))) { // Verifica si ingresa sin indicación de filtro (refresco de la opción atendido)
+                    // Mantiene el filtro actual
+                    $filtroFilename = $session->get('filtroFilenameCredencial');
+                } else {
+                    // Activa el filtro seleccionado
+                    $filtroFilename = $request->request->get('filename');
+                }
+            }
+            $session->set('filtroFilenameCredencial', $filtroFilename); // Almacena en session el filtro actual
+
+            // Recorre lista de archivos PDF y procesa eventuales filtros por nombre
             $archivos = [];
             foreach ($finder as $file) {
-                $archivos[] = $file->getRelativePathname();
+                $fileNameWithExtension = $file->getRelativePathname(); // Obtengo el nombre del Archivo
+
+                if (!$filtroFilename || !(strripos($fileNameWithExtension, $filtroFilename) === false))
+                {
+                    $archivos[] = $file->getRelativePathname();
+                }
             }
 
             $fileList = [];
@@ -46,7 +67,6 @@ class CredencialController extends AbstractController
             foreach($archivos as $archivo) {
                 // Nombre del Archivo en el FileSystem
                 $fileList[$i]['archivo'] = $archivo;
-                $fileList[$i]['archivoURL'] = str_replace(' ', '%20', $archivo);
 
                 // Obtengo el DNI (la cadena inicial hasta el primer blanco del nombre del archivo)
                 $dividoBlanco = explode(' ', $archivo);
@@ -87,6 +107,7 @@ class CredencialController extends AbstractController
                 'total' => $i,
                 'vistos' => $vistos,
                 'noVistos' => $noVistos,
+                'filtroFilename' => $filtroFilename,
                 'controller_name' => 'CredencialController',
             ]);
         }

@@ -20,23 +20,38 @@
                 </a>
             </div>
         </div>
-    
         <br>
-        <div class="card border-primary mb-3 align-bottom float-left" style="max-width: 48rem; font-size: .8rem; background-color: rgb(245, 245, 245);">
-            <div class="card-body border-primary text-dark float-right" style="max-width: 48rem; padding: 0.3rem; background-color: rgb(245, 245, 245);">
-                <div class="card-body text-dark text-right" style="font-size: 1rem;">
-                    Total de Credenciales: <strong>{{ total }}</strong>
-                    <br>
-                    Vistas: <strong>{{ vistos }}</strong>
-                    <br>
-                    No Vistas: <strong>{{ noVistos }}</strong>
+        <div class="container">
+            <div class="row">
+                <div class="col-4 align-self-end">
+                    <div class="card border-primary float-left" style="background-color: rgb(245, 245, 245);">
+                        <div class="card-body border-primary text-dark float-right" style="padding: 0.3rem; background-color: rgb(245, 245, 245);">
+                            <div class="card-body text-dark text-right" style="font-size: .9rem; padding:5px">
+                                Total de Credenciales: <strong>{{ total }}</strong>
+                                <br>
+                                Vistas: <strong>{{ vistos }}</strong>
+                                <br>
+                                No Vistas: <strong>{{ noVistos }}</strong>
+                            </div>
+                        </div>
+                    </div>                                
+                </div>
+                <div class="col-5 align-self-end">
+                    <form class="form-inline" method="POST">
+                        <div class="form-group">
+                          <input type="text" class="form-control" id="inputPassword2" placeholder="Búsqueda por nombre o dni..." value="{{ filtroFilename }}" name="filename" id="inputFileName" title="Ingrese visto para filtrar las credenciales ya accedidas o el DNI o nombre de lo que éste buscando">
+                        </div>
+                        <button type="submit" class="btn btn-link">Buscar</button>
+                    </form>                    
+                </div>
+                <div class="col-3 align-self-end">                   
+                    {# Botón para subir nuevas credenciales #}
+                    <a class="btn btn-primary float-right" href="{{ path('upload') }}">Subir Nuevas Credenciales</a>
                 </div>
             </div>
-        </div>
-
-        {# Botón para subir nuevas credenciales #}
-        <a class="btn btn-primary mt-5 float-right" href="{{ path('upload') }}">Subir Nuevas Credenciales</a>
-
+        </div>   
+            
+        <br>
         {# Muestra mensajes de tipo flash #}
         {% for label, messages in app.flashes %}
             {% for message in messages %}
