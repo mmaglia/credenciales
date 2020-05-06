@@ -157,7 +157,7 @@ class CredencialController extends AbstractController
                     // Si encontró más de un archivo que coincida, muestra mensaje pertinente
                     $logger->info('Coincidencia Múltiple', ['dni' => $dni]);                    
                     $mensaje = 'Se ha encontrado más de una credencial que coincide con el DNI ';
-                    $sugerencia = 'No es posible proceer con su descarga.';
+                    $sugerencia = 'Seleccione una de ellas.';
             }
 
 
@@ -166,6 +166,7 @@ class CredencialController extends AbstractController
                 'mensaje' => $mensaje,
                 'sugerencia' => $sugerencia,
                 'controller_name' => 'CredencialController',
+                'credenciales' => $encontrado
             ]);
         }
     }
@@ -176,7 +177,7 @@ class CredencialController extends AbstractController
      * @IsGranted("ROLE_ADMIN")
      */
     public function upload(Request $request, SluggerInterface $slugger, LoggerInterface $logger)
-    {
+    { 
         $form = $this->createForm(CredencialUploadType::class);
         $form->handleRequest($request);
 
@@ -195,6 +196,19 @@ class CredencialController extends AbstractController
                     // Y lo mueve al repositorio (definido en config/services.yaml)
                     try {
                         $cantidad++;
+
+                        // Primero borro cualquier instancia del archivo que se esté subiendo
+                        $archivosParaBorrar = new Finder();
+                        $filesystem = new Filesystem();
+
+                        $archivosParaBorrar->files()->in('pdf')->name(substr($newFilename,0,9) . '*');  // Busco las primeras 9 posiciones en el nombre del
+                                                                                                        // archivo subido con cualquier sufijo posterior
+                        foreach ($archivosParaBorrar as $file) { // Para cada uno de los archivos encontrados
+                            $fileNameWithExtension = $file->getRelativePathname(); // Obtengo el nombre del Archivo
+                            $filesystem->remove('pdf/' . $fileNameWithExtension);  // Lo borro
+                        }
+
+                        // Ahora si, lo muevo al repositorio al archivo que se termina de subir
                         $credencialFile->move($this->getParameter('credenciales_directory'), $newFilename);
                         $logger->info('Credencial subida al repositorio', ['Archivo' => 'pdf/' . $newFilename, 'Usuario' => $this->getUser()->getUsuario()]); 
                     } catch (FileException $e) {

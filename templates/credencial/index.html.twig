@@ -108,9 +108,17 @@
                 <p>{{ sugerencia }}.</p>
             </div>
             <br><br>
-            <div class="text-center">
-                <a class="btn btn-primary btn-lg float-center" href="{{ path('app_login') }}" role="button">Volver a Intentar</a>
-            </div>
+            {% if credenciales %}
+                <ul>
+                {% for archivo in credenciales %}
+                    <li><a target="_blank" href="{{ asset('pdf/' ~ archivo ) }}" title="Descargar">{{archivo}} </a></li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <div class="text-center">
+                    <a class="btn btn-primary btn-lg float-center" href="{{ path('app_login') }}" role="button">Volver a Intentar</a>
+                </div>
+            {% endif %}
 
         </div>
     {% endif %}
